@@ -9,6 +9,12 @@ public class CreateEmployeeUseCase {
     private EmployeeRepository employeeRepository;
 
     public EmployeeEntity execute(EmployeeEntity employeeEntity) {
+        var existentEmployee = this.employeeRepository.findByEmail(employeeEntity.getEmail());
+
+        if(existentEmployee.isPresent()) {
+            throw new IllegalArgumentException("Employee with email already exists!");
+        }
+
         return employeeRepository.save(employeeEntity);
     }
 }
