@@ -1,6 +1,7 @@
 package com.pablopetr.restaurant_api.modules.employees.useCases;
 
 import com.pablopetr.restaurant_api.modules.employees.entities.EmployeeEntity;
+import com.pablopetr.restaurant_api.modules.employees.enums.EmployeeRole;
 import com.pablopetr.restaurant_api.modules.employees.repositories.EmployeeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ public class CreateEmployeeUseCaseTest {
                 .email("johndoe@example.com")
                 .password("password")
                 .phone("55999999999")
-                .role("waiter")
+                .role(EmployeeRole.WAITER)
                 .build();
 
         when(this.employeeRepository.save(employeeEntity)).thenReturn(employeeEntity);
@@ -58,7 +59,7 @@ public class CreateEmployeeUseCaseTest {
                 .email("johndoe@example.com")
                 .password("password")
                 .phone("55999999999")
-                .role("waiter")
+                .role(EmployeeRole.WAITER)
                 .build();
 
         when(employeeRepository.findByEmail("johndoe@example.com"))
@@ -71,7 +72,7 @@ public class CreateEmployeeUseCaseTest {
                 .email("johndoe@example.com")
                 .password("password")
                 .phone("55999999999")
-                .role("waiter")
+                .role(EmployeeRole.WAITER)
                 .build();
 
         assertThrows(
