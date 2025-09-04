@@ -2,6 +2,7 @@ package com.pablopetr.restaurant_api.modules.items.useCases;
 
 import com.pablopetr.restaurant_api.modules.items.entities.CategoryEntity;
 import com.pablopetr.restaurant_api.modules.items.repositories.CategoryRepository;
+import com.pablopetr.restaurant_api.utils.SlugUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class CreateCategoryUseCase {
         if(existentCategoryByName.isPresent()) {
             throw new RuntimeException("Category with name " + categoryEntity.getName() + " already exists");
         }
+
+        var slug = SlugUtils.toSlug(categoryEntity.getName());
+        categoryEntity.setSlug(slug);
 
         var existentCategoryBySlug = categoryRepository.findBySlug(categoryEntity.getSlug());
 

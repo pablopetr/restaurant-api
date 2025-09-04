@@ -29,8 +29,6 @@ public class SecurityEmployeeFilter extends OncePerRequestFilter {
             FilterChain chain
     ) throws IOException, ServletException
     {
-        System.out.println("doFilterInternal");
-
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
