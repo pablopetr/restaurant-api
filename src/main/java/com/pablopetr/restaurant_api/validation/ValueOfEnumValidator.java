@@ -1,4 +1,4 @@
-package com.pablopetr.restaurant_api.modules.employees.validation;
+package com.pablopetr.restaurant_api.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

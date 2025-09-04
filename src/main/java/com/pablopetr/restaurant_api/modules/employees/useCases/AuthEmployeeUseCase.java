@@ -44,7 +44,7 @@ public class AuthEmployeeUseCase {
         var token = JWT.create()
                 .withIssuer("restaurant-api")
                 .withSubject(employee.getId().toString())
-                .withClaim("roles", List.of("candidate"))
+                .withClaim("roles", List.of("employee"))
                 .withExpiresAt(expiresIn)
                 .sign(algorithm);
 

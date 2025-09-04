@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,42 +15,47 @@ import java.io.IOException;
 
 @Component
 public class SecurityEmployeeFilter extends OncePerRequestFilter {
-    @Autowired
-    private JWTEmployeeProvider jwtemployeeProvider;
+
+    private final JWTEmployeeProvider jwtEmployeeProvider;
+
+    public SecurityEmployeeFilter(JWTEmployeeProvider jwtEmployeeProvider) {
+        this.jwtEmployeeProvider = jwtEmployeeProvider;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException
+    {
+        System.out.println("doFilterInternal");
+
         String header = request.getHeader("Authorization");
 
-        if(request.getRequestURI().startsWith("/employees")) {
-            if(header != null) {
-                var token = this.jwtemployeeProvider.validateToken(header);
-
-                if(token == null) {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    return;
-                }
-
-                request.setAttribute("employee_id", token.getSubject());
-
-                var roles = token.getClaim("roles").asList(Object.class);
-
-                var grants = roles.stream()
-                    .map(
-                        role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase())
-                    )
-                    .toList();
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        token.getSubject(),
-                        null,
-                        grants
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
+        if (header == null || !header.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
         }
 
-        filterChain.doFilter(request,response);
+        String rawToken = header.substring("Bearer ".length()).trim();
+
+        var token = jwtEmployeeProvider.validateToken(rawToken);
+
+        if (token == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        var roles = token.getClaim("roles").asList(String.class);
+        var authorities = roles.stream()
+                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.toUpperCase()))
+                .toList();
+
+        var auth = new UsernamePasswordAuthenticationToken(token.getSubject(), null, authorities);
+        request.setAttribute("employee_id", token.getSubject());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        chain.doFilter(request, response);
     }
 }
