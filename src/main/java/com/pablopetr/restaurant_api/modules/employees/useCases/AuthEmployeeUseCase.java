@@ -42,11 +42,12 @@ public class AuthEmployeeUseCase {
 
         var expiresIn = Instant.now().plus(Duration.ofHours(2));
         var jti = UUID.randomUUID().toString();
+        String roleName = employee.getRole().name().toLowerCase();
 
         var token = JWT.create()
                 .withIssuer("restaurant-api")
                 .withSubject(employee.getId().toString())
-                .withClaim("roles", List.of("employee"))
+                .withClaim("roles", List.of(roleName))
                 .withClaim("token_version", employee.getTokenVersion())
                 .withJWTId(jti)
                 .withExpiresAt(expiresIn)

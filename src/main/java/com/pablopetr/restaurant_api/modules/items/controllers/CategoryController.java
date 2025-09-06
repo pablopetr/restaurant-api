@@ -44,7 +44,7 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<Page<CategoryEntity>> findAll(
-            @PageableDefault(size = 2, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         try {

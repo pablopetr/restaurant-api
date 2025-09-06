@@ -33,6 +33,7 @@ public class EmployeeEntity {
     private EmployeeRole role;
 
     @Column(name = "token_version", nullable = false)
+    @Builder.Default
     private Integer tokenVersion = 0;
 
     @CreationTimestamp

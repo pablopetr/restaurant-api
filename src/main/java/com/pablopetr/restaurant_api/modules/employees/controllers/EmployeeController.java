@@ -1,15 +1,21 @@
 package com.pablopetr.restaurant_api.modules.employees.controllers;
 
-import com.pablopetr.restaurant_api.modules.employees.dtos.AuthEmployeeRequestDTO;
-import com.pablopetr.restaurant_api.modules.employees.dtos.AuthEmployeeResponseDTO;
-import com.pablopetr.restaurant_api.modules.employees.dtos.CreateEmployeeDTO;
-import com.pablopetr.restaurant_api.modules.employees.dtos.UpdateEmployeeDTO;
+import com.pablopetr.restaurant_api.modules.employees.dtos.*;
+import com.pablopetr.restaurant_api.modules.employees.dtos.admin.AdminUpdateEmployeeDTO;
+import com.pablopetr.restaurant_api.modules.employees.dtos.admin.EmployeeDTO;
 import com.pablopetr.restaurant_api.modules.employees.entities.EmployeeEntity;
 import com.pablopetr.restaurant_api.modules.employees.enums.EmployeeRole;
 import com.pablopetr.restaurant_api.modules.employees.useCases.*;
+import com.pablopetr.restaurant_api.modules.employees.useCases.admin.AdminUpdateEmployeeUseCase;
+import com.pablopetr.restaurant_api.modules.employees.useCases.admin.FindEmployeeUseCase;
+import com.pablopetr.restaurant_api.modules.employees.useCases.admin.ListEmployeesUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,10 +41,50 @@ public class EmployeeController {
     private GetEmployeeProfileUseCase getEmployeeProfileUseCase;
 
     @Autowired
+    private ListEmployeesUseCase listEmployeesUseCase;
+
+    @Autowired
+    private FindEmployeeUseCase findEmployeeUseCase;
+
+    @Autowired
     private UpdateEmployeeUseCase updateEmployeeUseCase;
 
     @Autowired
+    private AdminUpdateEmployeeUseCase adminUpdateEmployeeUseCase;
+
+    @Autowired
     private DeleteEmployeeUseCase deleteEmployeeUseCase;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<EmployeeDTO>> findAll(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        try {
+            var page = this.listEmployeesUseCase.execute(pageable);
+
+            return ResponseEntity.ok(page);
+        } catch (Exception exception) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Optional<EmployeeEntity>> findOne(@PathVariable UUID id) {
+        try {
+            var dto = this.getEmployeeProfileUseCase.execute(String.valueOf(id));
+
+            if(dto.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            return ResponseEntity.ok(dto);
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO) {
@@ -105,13 +151,30 @@ public class EmployeeController {
         }
     }
 
-    @PutMapping
+    @PutMapping("me")
     public ResponseEntity<Object> update(
             @Valid @RequestBody UpdateEmployeeDTO updateEmployeeDTO,
             HttpServletRequest request
     ) {
         try {
             var updatedEmployee = this.updateEmployeeUseCase.execute(updateEmployeeDTO);
+
+            return ResponseEntity.ok().body(updatedEmployee);
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Object> updateById(
+            @PathVariable String id,
+            @Valid @RequestBody AdminUpdateEmployeeDTO updateEmployeeDTO
+    ) {
+        try {
+            UUID employeeId = UUID.fromString(id);
+
+            var updatedEmployee = this.adminUpdateEmployeeUseCase.execute(employeeId, updateEmployeeDTO);
 
             return ResponseEntity.ok().body(updatedEmployee);
         } catch (Exception exception) {
