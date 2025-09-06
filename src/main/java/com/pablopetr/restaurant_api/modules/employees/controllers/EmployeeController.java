@@ -3,11 +3,13 @@ package com.pablopetr.restaurant_api.modules.employees.controllers;
 import com.pablopetr.restaurant_api.modules.employees.dtos.AuthEmployeeRequestDTO;
 import com.pablopetr.restaurant_api.modules.employees.dtos.AuthEmployeeResponseDTO;
 import com.pablopetr.restaurant_api.modules.employees.dtos.CreateEmployeeDTO;
+import com.pablopetr.restaurant_api.modules.employees.dtos.UpdateEmployeeDTO;
 import com.pablopetr.restaurant_api.modules.employees.entities.EmployeeEntity;
 import com.pablopetr.restaurant_api.modules.employees.enums.EmployeeRole;
 import com.pablopetr.restaurant_api.modules.employees.useCases.AuthEmployeeUseCase;
 import com.pablopetr.restaurant_api.modules.employees.useCases.CreateEmployeeUseCase;
 import com.pablopetr.restaurant_api.modules.employees.useCases.GetEmployeeProfileUseCase;
+import com.pablopetr.restaurant_api.modules.employees.useCases.UpdateEmployeeUseCase;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class EmployeeController {
 
     @Autowired
     private GetEmployeeProfileUseCase getEmployeeProfileUseCase;
+
+    @Autowired
+    private UpdateEmployeeUseCase updateEmployeeUseCase;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO) {
@@ -93,6 +98,20 @@ public class EmployeeController {
             }
 
             return ResponseEntity.ok().body(profile);
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Object> update(
+            @Valid @RequestBody UpdateEmployeeDTO updateEmployeeDTO,
+            HttpServletRequest request
+    ) {
+        try {
+            var updatedEmployee = this.updateEmployeeUseCase.execute(updateEmployeeDTO);
+
+            return ResponseEntity.ok().body(updatedEmployee);
         } catch (Exception exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }
