@@ -6,19 +6,18 @@ import com.pablopetr.restaurant_api.modules.employees.dtos.CreateEmployeeDTO;
 import com.pablopetr.restaurant_api.modules.employees.dtos.UpdateEmployeeDTO;
 import com.pablopetr.restaurant_api.modules.employees.entities.EmployeeEntity;
 import com.pablopetr.restaurant_api.modules.employees.enums.EmployeeRole;
-import com.pablopetr.restaurant_api.modules.employees.useCases.AuthEmployeeUseCase;
-import com.pablopetr.restaurant_api.modules.employees.useCases.CreateEmployeeUseCase;
-import com.pablopetr.restaurant_api.modules.employees.useCases.GetEmployeeProfileUseCase;
-import com.pablopetr.restaurant_api.modules.employees.useCases.UpdateEmployeeUseCase;
+import com.pablopetr.restaurant_api.modules.employees.useCases.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/employees")
@@ -37,6 +36,9 @@ public class EmployeeController {
 
     @Autowired
     private UpdateEmployeeUseCase updateEmployeeUseCase;
+
+    @Autowired
+    private DeleteEmployeeUseCase deleteEmployeeUseCase;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO) {
@@ -112,6 +114,33 @@ public class EmployeeController {
             var updatedEmployee = this.updateEmployeeUseCase.execute(updateEmployeeDTO);
 
             return ResponseEntity.ok().body(updatedEmployee);
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Object> deleteMyAccount(HttpServletRequest request) {
+        try {
+            UUID employeeId = UUID.fromString((String) request.getAttribute("employee_id"));
+
+            deleteEmployeeUseCase.execute(employeeId);
+
+            return ResponseEntity.noContent().build();
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{employeeId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Object> deleteEmployeeById(@PathVariable String employeeId) {
+        try {
+            UUID employeeUUID = UUID.fromString(employeeId);
+
+            deleteEmployeeUseCase.execute(employeeUUID);
+
+            return ResponseEntity.noContent().build();
         } catch (Exception exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }

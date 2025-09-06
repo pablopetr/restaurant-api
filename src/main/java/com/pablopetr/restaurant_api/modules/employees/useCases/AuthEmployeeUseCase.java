@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AuthEmployeeUseCase {
@@ -39,12 +40,15 @@ public class AuthEmployeeUseCase {
 
         Algorithm algorithm =  Algorithm.HMAC256(secretKey);
 
-        var expiresIn = Instant.now().plus(Duration.ofHours(24));
+        var expiresIn = Instant.now().plus(Duration.ofHours(2));
+        var jti = UUID.randomUUID().toString();
 
         var token = JWT.create()
                 .withIssuer("restaurant-api")
                 .withSubject(employee.getId().toString())
                 .withClaim("roles", List.of("employee"))
+                .withClaim("token_version", employee.getTokenVersion())
+                .withJWTId(jti)
                 .withExpiresAt(expiresIn)
                 .sign(algorithm);
 

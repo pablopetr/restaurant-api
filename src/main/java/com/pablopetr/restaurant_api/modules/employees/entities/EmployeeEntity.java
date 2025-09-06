@@ -32,6 +32,9 @@ public class EmployeeEntity {
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;
 
+    @Column(name = "token_version", nullable = false)
+    private Integer tokenVersion = 0;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 }
