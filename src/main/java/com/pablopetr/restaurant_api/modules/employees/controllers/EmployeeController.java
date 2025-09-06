@@ -7,15 +7,16 @@ import com.pablopetr.restaurant_api.modules.employees.entities.EmployeeEntity;
 import com.pablopetr.restaurant_api.modules.employees.enums.EmployeeRole;
 import com.pablopetr.restaurant_api.modules.employees.useCases.AuthEmployeeUseCase;
 import com.pablopetr.restaurant_api.modules.employees.useCases.CreateEmployeeUseCase;
+import com.pablopetr.restaurant_api.modules.employees.useCases.GetEmployeeProfileUseCase;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/employees")
@@ -28,6 +29,9 @@ public class EmployeeController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private GetEmployeeProfileUseCase getEmployeeProfileUseCase;
 
     @PostMapping("")
     public ResponseEntity<Object> create(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO) {
@@ -70,6 +74,27 @@ public class EmployeeController {
             System.err.println(exception.getMessage());
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Object> me(HttpServletRequest request) {
+        String employeeId = (String) request.getAttribute("employee_id");
+
+        if(employeeId == null) {
+            return ResponseEntity.badRequest().body("Employee ID not found in request");
+        }
+
+        try {
+            Optional<EmployeeEntity> profile = this.getEmployeeProfileUseCase.execute(employeeId);
+
+            if(profile.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+            }
+
+            return ResponseEntity.ok().body(profile);
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }
     }
 }
