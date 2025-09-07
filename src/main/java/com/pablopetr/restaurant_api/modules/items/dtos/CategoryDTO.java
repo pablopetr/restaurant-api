@@ -5,7 +5,7 @@ import com.pablopetr.restaurant_api.validation.ValueOfEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CreateCategoryDTO (
+public record CategoryDTO(
     @NotBlank @Size(min = 3, max = 32) String name,
     @NotBlank @Size(min = 16, max = 255) String description,
 
