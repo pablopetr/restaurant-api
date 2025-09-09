@@ -1,4 +1,4 @@
-package com.pablopetr.restaurant_api.modules.items.dtos;
+package com.pablopetr.restaurant_api.modules.items.dtos.categories;
 
 import com.pablopetr.restaurant_api.modules.items.enums.CategoryType;
 import com.pablopetr.restaurant_api.validation.ValueOfEnum;

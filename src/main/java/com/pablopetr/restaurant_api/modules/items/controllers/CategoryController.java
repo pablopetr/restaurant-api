@@ -1,6 +1,6 @@
 package com.pablopetr.restaurant_api.modules.items.controllers;
 
-import com.pablopetr.restaurant_api.modules.items.dtos.CategoryDTO;
+import com.pablopetr.restaurant_api.modules.items.dtos.categories.CategoryDTO;
 import com.pablopetr.restaurant_api.modules.items.entities.CategoryEntity;
 import com.pablopetr.restaurant_api.modules.items.enums.CategoryType;
 import com.pablopetr.restaurant_api.modules.items.useCases.CreateCategoryUseCase;

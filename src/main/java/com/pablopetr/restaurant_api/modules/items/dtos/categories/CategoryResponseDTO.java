@@ -1,4 +1,4 @@
-package com.pablopetr.restaurant_api.modules.items.dtos;
+package com.pablopetr.restaurant_api.modules.items.dtos.categories;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
