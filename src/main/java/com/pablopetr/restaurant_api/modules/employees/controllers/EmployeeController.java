@@ -87,6 +87,7 @@ public class EmployeeController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> create(@Valid @RequestBody CreateEmployeeDTO createEmployeeDTO) {
         try {
             var role = EmployeeRole.valueOf(createEmployeeDTO.role().trim().toUpperCase());
