@@ -62,7 +62,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemEntity> findById(@PathVariable String id) {
+    public ResponseEntity<ItemResponseDTO> findById(@PathVariable String id) {
         try {
             var uuid = UUID.fromString(id);
 

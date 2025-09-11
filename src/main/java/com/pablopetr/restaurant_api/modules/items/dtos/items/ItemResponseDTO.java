@@ -1,11 +1,9 @@
 package com.pablopetr.restaurant_api.modules.items.dtos.items;
 
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.Instant;
+import lombok.Builder;
 import java.util.UUID;
 
+@Builder
 public record ItemResponseDTO(
         UUID id,
         String name,
