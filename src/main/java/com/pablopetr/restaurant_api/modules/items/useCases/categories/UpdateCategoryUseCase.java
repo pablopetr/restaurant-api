@@ -1,4 +1,4 @@
-package com.pablopetr.restaurant_api.modules.items.useCases;
+package com.pablopetr.restaurant_api.modules.items.useCases.categories;
 
 import com.pablopetr.restaurant_api.modules.items.dtos.categories.CategoryDTO;
 import com.pablopetr.restaurant_api.modules.items.entities.CategoryEntity;

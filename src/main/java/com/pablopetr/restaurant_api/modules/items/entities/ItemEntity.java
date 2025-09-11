@@ -31,7 +31,7 @@ public class ItemEntity {
     private Integer stock = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false, updatable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
     @Column(name = "category_id", insertable = false, updatable = false)

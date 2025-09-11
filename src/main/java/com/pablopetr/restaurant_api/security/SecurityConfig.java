@@ -30,6 +30,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/employees", "/employees/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/employees/auth").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/items", "/items/").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/items/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityEmployeeFilter, BasicAuthenticationFilter.class);
