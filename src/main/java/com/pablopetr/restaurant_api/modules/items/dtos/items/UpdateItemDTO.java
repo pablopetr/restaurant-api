@@ -1,13 +1,12 @@
 package com.pablopetr.restaurant_api.modules.items.dtos.items;
 
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CreateItemDTO (
+public record UpdateItemDTO (
     @NotBlank String name,
     @NotBlank String description,
-    @NotNull @DecimalMin("0.0") Double price,
+    @NotNull Double price,
     @NotNull Integer stock,
     @NotBlank String categoryId
 ) {}
