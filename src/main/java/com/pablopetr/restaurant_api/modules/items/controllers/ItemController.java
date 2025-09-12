@@ -76,7 +76,7 @@ public class ItemController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ItemEntity> update(
+    public ResponseEntity<ItemResponseDTO> update(
         @PathVariable String id,
         @Valid @RequestBody UpdateItemDTO updateItemDTO
     ) {
@@ -85,8 +85,10 @@ public class ItemController {
 
             var result = this.updateItemUseCase.execute(uuid,  updateItemDTO);
 
-            return ResponseEntity.ok().body(result);
+            return ResponseEntity.ok(result);
         } catch (RuntimeException exception) {
+            exception.printStackTrace();
+
             return ResponseEntity.badRequest().body(null);
         }
     }

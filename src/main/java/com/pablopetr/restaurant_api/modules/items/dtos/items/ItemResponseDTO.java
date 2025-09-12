@@ -11,5 +11,6 @@ public record ItemResponseDTO(
         Double price,
         String slug,
         Integer stock,
-        UUID categoryId
+        UUID categoryId,
+        java.time.LocalDateTime createdAt
 ) {}

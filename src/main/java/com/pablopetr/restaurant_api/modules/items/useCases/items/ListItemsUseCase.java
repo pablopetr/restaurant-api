@@ -1,7 +1,6 @@
 package com.pablopetr.restaurant_api.modules.items.useCases.items;
 
 import com.pablopetr.restaurant_api.modules.items.dtos.items.ItemResponseDTO;
-import com.pablopetr.restaurant_api.modules.items.entities.ItemEntity;
 import com.pablopetr.restaurant_api.modules.items.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,8 @@ public class ListItemsUseCase {
                         item.getPrice(),
                         item.getSlug(),
                         item.getStock(),
-                        item.getCategory() != null ? item.getCategory().getId() : null
+                        item.getCategory() != null ? item.getCategory().getId() : null,
+                        item.getCreatedAt()
                 ));
     }
 }
