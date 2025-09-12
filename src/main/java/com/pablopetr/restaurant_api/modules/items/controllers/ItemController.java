@@ -91,9 +91,9 @@ public class ItemController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@RequestParam String id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         try {
             var uuid = UUID.fromString(id);
 

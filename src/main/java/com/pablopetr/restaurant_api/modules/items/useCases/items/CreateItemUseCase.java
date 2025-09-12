@@ -26,6 +26,10 @@ public class CreateItemUseCase {
         var category = this.categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found!"));
 
+        if(this.itemRepository.existsBySlug(slug)) {
+            throw new RuntimeException("Item with Slug " + slug + " already exists");
+        }
+
         var itemEntity = ItemEntity.builder()
                 .name(createItemDTO.name())
                 .slug(slug)
