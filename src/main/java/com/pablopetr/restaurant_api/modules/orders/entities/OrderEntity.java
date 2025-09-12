@@ -1,24 +1,23 @@
 package com.pablopetr.restaurant_api.modules.orders.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-@Builder
+@Getter @Setter
+
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "orders")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +31,8 @@ public class OrderEntity {
         cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
         orphanRemoval = true
     )
-    private Set<OrderItemEntity> items = new LinkedHashSet<>();
+    @Builder.Default
+    private List<OrderItemEntity> items = new ArrayList<>();
 
     @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal total = BigDecimal.ZERO;
@@ -62,6 +62,8 @@ public class OrderEntity {
 
             items.add(item);
         }
+
+        recalcTotals();
     }
 
     public void changeQuantity(UUID itemId, Integer quantity) {
@@ -85,6 +87,18 @@ public class OrderEntity {
 
     public void removeItem(UUID itemId) {
         items.remove(requireItem(itemId));
+
+        recalcTotals();
+    }
+
+    public void place() {
+        if(this.items.isEmpty()) {
+            throw new IllegalStateException("Cannot place an order with no items");
+        }
+
+        if(this.status != OrderStatus.PENDING) {
+            throw new IllegalStateException("Only pending orders can be placed");
+        }
 
         recalcTotals();
     }
