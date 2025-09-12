@@ -1,9 +1,7 @@
 package com.pablopetr.restaurant_api.modules.items.entities;
 
 import com.pablopetr.restaurant_api.modules.items.enums.CategoryType;
-import com.pablopetr.restaurant_api.validation.ValueOfEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
