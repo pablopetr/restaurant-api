@@ -1,8 +1,10 @@
 package com.pablopetr.restaurant_api.modules.orders.controllers;
 
+import com.pablopetr.restaurant_api.modules.orders.dtos.AddItemsRequestDTO;
 import com.pablopetr.restaurant_api.modules.orders.dtos.CreateOrderRequestDTO;
 import com.pablopetr.restaurant_api.modules.orders.dtos.OrderResponseDTO;
 import com.pablopetr.restaurant_api.modules.orders.entities.OrderStatus;
+import com.pablopetr.restaurant_api.modules.orders.useCases.AddItemToOrderUseCase;
 import com.pablopetr.restaurant_api.modules.orders.useCases.CreateOrderUseCase;
 import com.pablopetr.restaurant_api.modules.orders.useCases.ListOrdersUseCase;
 import jakarta.validation.Valid;
@@ -13,6 +15,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -21,6 +25,9 @@ public class OrderController {
 
     @Autowired
     private ListOrdersUseCase listOrdersUseCase;
+
+    @Autowired
+    private AddItemToOrderUseCase addItemToOrderUseCase;
 
     @GetMapping
     public ResponseEntity<Page<OrderResponseDTO>> findAll(
@@ -46,6 +53,22 @@ public class OrderController {
             OrderResponseDTO orderResponseDTO = this.createOrderUseCase.execute(createOrderRequestDTO);
 
             return ResponseEntity.status(201).body(orderResponseDTO);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping("/{orderId}/items")
+    public ResponseEntity<OrderResponseDTO> addItem(
+        @PathVariable UUID orderId,
+        @RequestBody @Valid AddItemsRequestDTO body
+    ) {
+        try {
+            OrderResponseDTO orderResponseDTO = this.addItemToOrderUseCase.execute(orderId, body);
+
+            return ResponseEntity.ok().body(orderResponseDTO);
         } catch (RuntimeException ex) {
             ex.printStackTrace();
 
