@@ -38,8 +38,10 @@ public class CategoryController {
         try {
             var result = this.listCategoriesUseCase.execute(pageable);
 
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok().body(result);
         } catch (Exception exception) {
+            exception.printStackTrace();
+
             return ResponseEntity.badRequest().body(null);
         }
     }
